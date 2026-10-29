@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-slate-50 font-body text-ink antialiased; }
+  button { @apply font-body; }
+  table { @apply w-full text-left text-sm; }
+  th { @apply bg-slate-50 px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400; }
+  td { @apply border-t border-slate-100 px-5 py-4; }
+}
+@layer components {
+  .heading { @apply font-display font-extrabold tracking-tight; }
+  .eyebrow { @apply text-[11px] font-extrabold tracking-[.14em] text-purple; }
+  .panel { @apply rounded-2xl border border-slate-200 bg-white p-6; }
+  .input { @apply mt-2 block w-full rounded-xl border border-slate-200 bg-white px-3 py-3 font-normal outline-none transition focus:border-purple focus:ring-2 focus:ring-violet-100; }
+  .button { @apply inline-flex items-center justify-center rounded-xl bg-purple px-4 py-3 text-sm font-bold text-white transition hover:bg-purple-dark; }
+  .button-secondary { @apply inline-flex items-center justify-center rounded-xl bg-violet-100 px-4 py-3 text-sm font-bold text-purple transition hover:bg-violet-200; }
+  .text-link { @apply text-sm font-bold text-slate-600 hover:text-purple; }
+  .score-pill { @apply rounded-lg bg-emerald-100 px-2 py-1 text-xs font-extrabold text-emerald-700; }
+  .status-tag { @apply inline-block rounded-lg bg-violet-100 px-2 py-1 text-xs font-extrabold text-purple; }
+}
+@media print { nav, footer, .print\:hidden { display: none !important; } main { max-width: none !important; padding: 0 !important; } }
