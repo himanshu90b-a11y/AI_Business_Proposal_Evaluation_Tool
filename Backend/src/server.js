@@ -25,11 +25,17 @@ app.use((err, _req, res, _next) => {
   if (err.message?.startsWith("Unsupported file type")) return res.status(400).json({ message: err.message });
   if (err.name === "CastError") return res.status(404).json({ message: "Evaluation not found." });
   if (err.name === "ValidationError") return res.status(400).json({ message: Object.values(err.errors)[0].message });
-  if (err.code === 11000) return res.status(409).json({ message: "That value is already in use." });
+  if (err.code === 11000) {
+    const duplicatedFields = Object.keys(err.keyPattern || {});
+    const message = duplicatedFields.includes("email")
+      ? "An account with this email already exists. Please log in or use a different email."
+      : `A value already exists for: ${duplicatedFields.join(", ") || "a unique field"}.`;
+    return res.status(409).json({ message });
+  }
   console.error(err);
   return res.status(500).json({ message: "Something went wrong. Please try again." });
 });
 
-mongoose.connect(env.mongoUri)
+mongoose.connect(env.mongoUri, { dbName: env.mongoDbName })
   .then(() => app.listen(env.port, () => console.log(`ProposalIQ API listening on port ${env.port}`)))
   .catch((error) => { console.error("MongoDB connection failed:", error.message); process.exit(1); });

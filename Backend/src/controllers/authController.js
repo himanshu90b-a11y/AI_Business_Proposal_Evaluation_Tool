@@ -15,14 +15,42 @@ export async function register(req, res, next) {
     const fullName = req.body.fullName?.trim();
     const email = req.body.email?.trim().toLowerCase();
     const { password } = req.body;
-    if (!fullName || !emailPattern.test(email || "") || typeof password !== "string" || password.length < 8) {
-      return res.status(400).json({ message: "Enter a name and valid email, and use a password with at least 8 characters." });
+
+    if (
+      !fullName ||
+      !emailPattern.test(email || "") ||
+      typeof password !== "string" ||
+      password.length < 8
+    ) {
+      return res.status(400).json({
+        message: "Enter a name and valid email, and use a password with at least 8 characters."
+      });
     }
-    if (await User.exists({ email })) return res.status(409).json({ message: "An account with this email already exists. Please log in." });
-    const user = await User.create({ fullName, email, passwordHash: await bcrypt.hash(password, 12) });
+
+    if (await User.exists({ email })) {
+      return res.status(409).json({
+        message: "An account with this email already exists. Please log in."
+      });
+    }
+
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash: await bcrypt.hash(password, 12)
+    });
+
     setAuthCookie(res, user._id.toString());
+
     return res.status(201).json({ user: userResponse(user) });
-  } catch (error) { return next(error); }
+  } catch (error) {
+    if (error?.code === 11000 && error?.keyPattern?.email) {
+      return res.status(409).json({
+        message: "An account with this email already exists. Please log in."
+      });
+    }
+
+    return next(error);
+  }
 }
 
 export async function login(req, res, next) {
